@@ -1,128 +1,82 @@
-<img src="misc/images/fast-downward.svg" width="800" alt="Fast Downward">
+# PR2
 
-Fast Downward is a domain-independent classical planning system.
+PR2 is the next iteration in the evolution of SoA non-deterministic planning.
 
-Copyright 2003-2023 Fast Downward contributors (see below).
+## ![siren image](https://img.icons8.com/color/48/000000/warning-shield.png) WARNING ![siren image](https://img.icons8.com/color/48/000000/warning-shield.png)
 
-For further information:
-- Fast Downward website: <https://www.fast-downward.org>
-- Report a bug or file an issue: <https://issues.fast-downward.org>
-- Fast Downward mailing list: <https://groups.google.com/forum/#!forum/fast-downward>
-- Fast Downward main repository: <https://github.com/aibasel/downward>
+This is a rewrite of the PR2 planner, described in detail over [[here](https://mulab.ai/project/pr2/)]. *It is non-operational!!!*
 
-## Scientific experiments
+The purpose of this repository is to house the eventual re-working of the PR2 planner so that it maintains working operability with the latest version of FastDownward. This repository is a fork of the [FastDownward repository](https://github.com/aibasel/downward), and will be updated regularly. Until this worning message is removed, the code found here should *not* be considered operational.
 
-We recommend to use the [latest release](https://github.com/aibasel/downward/releases/latest) instead of the tip of the main branch.
-The [Downward Lab](https://lab.readthedocs.io/en/stable/) Python package helps running Fast Downward experiments.
-Our separate [benchmark repository](https://github.com/aibasel/downward-benchmarks) contains a collection of planning tasks.
-
-## Supported software versions
-
-The planner is mainly developed under Linux; and all of its features should work with no restrictions under this platform.
-The planner should compile and run correctly on macOS, but we cannot guarantee that it works as well as under Linux.
-The same comment applies for Windows, where additionally some diagnostic features (e.g., reporting peak memory usage when the planner is terminated by a signal) are not supported.
-Setting time and memory limits and running portfolios is not supported under Windows either.
-
-This version of Fast Downward has been tested with the following software versions:
-
-| OS           | Python | C++ compiler                                                     | CMake |
-| ------------ | ------ | ---------------------------------------------------------------- | ----- |
-| Ubuntu 22.04 | 3.10   | GCC 11, GCC 12, Clang 14                                         | 3.22  |
-| Ubuntu 20.04 | 3.8    | GCC 10, Clang 12                                                 | 3.16  |
-| macOS 12     | 3.10   | AppleClang 14                                                    | 3.24  |
-| macOS 11     | 3.8    | AppleClang 13                                                    | 3.24  |
-| Windows 10   | 3.8    | Visual Studio Enterprise 2019 (MSVC 19.29) and 2022 (MSVC 19.31) | 3.22  |
-
-We test LP support with CPLEX 22.1.1 and SoPlex 6.0.3+. On Ubuntu we
-test both CPLEX and SoPlex. On Windows we currently only test CPLEX,
-and on macOS we do not test LP solvers (yet).
-
-## Build instructions
-
-See [BUILD.md](BUILD.md).
+What follows is the original README from the PR2 release. The FastDownward README can be found at [FD-README.md](FD-README.md).
 
 
-## Contributors
+## Docker Usage
 
-The following list includes all people that actively contributed to
-Fast Downward, i.e., all people that appear in some commits in Fast
-Downward's history (see below for a history on how Fast Downward
-emerged) or people that influenced the development of such commits.
-Currently, this list is sorted by the last year the person has been
-active, and in case of ties, by the earliest year the person started
-contributing, and finally by last name.
+To build the docker image where things should "just work":
 
-- 2003-2023 Malte Helmert
-- 2008-2016, 2018-2023 Gabriele Roeger
-- 2010-2023 Jendrik Seipp
-- 2010-2011, 2013-2023 Silvan Sievers
-- 2012-2023 Florian Pommerening
-- 2013, 2015-2023 Salomé Eriksson
-- 2015, 2021-2023 Thomas Keller
-- 2018-2023 Patrick Ferber
-- 2018-2020, 2023 Augusto B. Corrêa
-- 2021-2023 Clemens Büchner
-- 2022-2023 Remo Christen
-- 2023 Simon Dold
-- 2023 Claudia S. Grundke
-- 2023 Victor Paléologue
-- 2023 Emanuele Tirendi
-- 2021-2022 Dominik Drexler
-- 2016-2020 Cedric Geissmann
-- 2017-2020 Guillem Francès
-- 2020 Rik de Graaff
-- 2015-2019 Manuel Heusner
-- 2017 Daniel Killenberger
-- 2016 Yusra Alkhazraji
-- 2016 Martin Wehrle
-- 2014-2015 Patrick von Reth
-- 2009-2014 Erez Karpas
-- 2014 Robert P. Goldman
-- 2010-2012 Andrew Coles
-- 2010, 2012 Patrik Haslum
-- 2003-2011 Silvia Richter
-- 2009-2011 Emil Keyder
-- 2010-2011 Moritz Gronbach
-- 2010-2011 Manuela Ortlieb
-- 2011 Vidal Alcázar Saiz
-- 2011 Michael Katz
-- 2011 Raz Nissim
-- 2010 Moritz Goebelbecker
-- 2007-2009 Matthias Westphal
-- 2009 Christian Muise
-
-
-## History
-
-The current version of Fast Downward is the merger of three different
-projects:
-
-- the original version of Fast Downward developed by Malte Helmert
-  and Silvia Richter
-- LAMA, developed by Silvia Richter and Matthias Westphal based on
-  the original Fast Downward
-- FD-Tech, a modified version of Fast Downward developed by Erez
-  Karpas and Michael Katz based on the original code
-
-In addition to these three main sources, the codebase incorporates
-code and features from numerous branches of the Fast Downward codebase
-developed for various research papers. The main contributors to these
-branches are Malte Helmert, Gabi Röger and Silvia Richter.
-
-
-## License
-
+```bash
+docker build -t pr2 .
 ```
-Fast Downward is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or (at
-your option) any later version.
 
-Fast Downward is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-General Public License for more details.
+To run the docker image and mount the local directory as a volume:
 
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
+```bash
+docker run --cpus 1 -it -v $(pwd):/PROJECT pr2
+```
+
+## Planners Available
+
+To make evaluations easier, pre-compiled/configured versions of all leading FOND planners are included. Currently, the list includes:
+
+* [PRP](https://github.com/QuMuLab/planner-for-relevant-policies)
+* [MyND](https://github.com/robertmattmueller/myND)
+* [FONDSAT](https://github.com/tomsons22/FOND-SAT)
+* [Paladinus](https://github.com/ramonpereira/paladinus)
+
+Every effort was made to patch and configure each planner to their full potential (e.g., fixing parse errors with MyND and using a stronger SAT solver for FONDSAT). If there is any issue you would like to see fixed, or FOND planner you would like to see included, just [reach out](http://www.haz.ca).
+
+## Evaluations
+
+### Running the evaluations
+
+All of the evaluation settings can be found by running the `evaluate.py` script:
+
+```bash
+python pr2-scripts/evaluate.py --help
+```
+
+**Note**: It assumes that you are in the `pr2` docker container to run things.
+
+If you have multiple cores available to run evaluations, you can "cache" the solver calls, and run several threads simultaneously to solve problems from the queue. As an example, the following would...
+
+* queue up solving for both the PR2 and PRP planners
+* use the `all-fond-papers` collection
+* store results in the `RESULTS/` folder
+* store the cache of solver calls in the `CACHE/` folder
+
+```bash
+python pr2-scripts/evaluate.py --catalogue /PROJECT/fond-benchmarks/ --collection all-fond-papers --output RESULTS --cache CACHE --planner pr2
+
+python pr2-scripts/evaluate.py --catalogue /PROJECT/fond-benchmarks/ --collection all-fond-papers --output RESULTS --cache CACHE --planner prp
+```
+Then, to start a thread of solving, navigate to the `CACHE/` directory and run the script:
+
+```bash
+cd CACHE
+python run.py
+```
+
+To monitor the progress of the evaluations, run the following command (assumes that the CACHE is being used by several threads and that the results are in the `RESULTS` directory):
+
+```bash
+watch 'echo "scale=1 ; 100 * `ls -l RESULTS | wc -l` / (`ls -l CACHE | wc -l` + `ls -l RESULTS | wc -l`)" | bc'
+```
+
+### Analyzing the results
+
+All of the analysis exists in a jupyter notebook found in the `pr2-scripts` directory. You can run the notebook by loading a dockerized jupyter notebook server from the top-level directory of this repository:
+
+```bash
+docker run -it --rm -p 8888:8888 -v "${PWD}":/home/jovyan/work jupyter/datascience-notebook:9e63909e0317
 ```
