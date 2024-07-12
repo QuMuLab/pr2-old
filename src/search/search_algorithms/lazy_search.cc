@@ -43,6 +43,46 @@ LazySearch::LazySearch(
     */
 }
 
+
+
+
+
+
+
+// PR2: Modified to allow for specific task
+LazySearch::LazySearch(
+    const shared_ptr<OpenListFactory> &open, bool reopen_closed,
+    const vector<shared_ptr<Evaluator>> &preferred,
+    bool randomize_successors, bool preferred_successors_first,
+    int random_seed, OperatorCost cost_type, int bound, double max_time,
+    const string &description, utils::Verbosity verbosity,
+    const std::shared_ptr<AbstractTask> &newtask,
+    DeadendAwareSuccessorGenerator *pr2_successor_generator)
+    : SearchAlgorithm(
+          cost_type, bound, max_time, description, verbosity, newtask),
+      open_list(open->create_edge_open_list()),
+      reopen_closed_nodes(reopen_closed),
+      randomize_successors(randomize_successors),
+      preferred_successors_first(preferred_successors_first),
+      rng(utils::get_rng(random_seed)),
+      preferred_operator_evaluators(preferred),
+      current_state(state_registry.get_initial_state()),
+      current_predecessor_id(StateID::no_state),
+      current_operator_id(OperatorID::no_operator),
+      current_g(0),
+      current_real_g(0),
+      current_eval_context(current_state, 0, true, &statistics),
+      pr2_successor_generator(pr2_successor_generator) {
+    /*
+      We initialize current_eval_context in such a way that the initial node
+      counts as "preferred".
+    */
+}
+
+
+
+
+
 void LazySearch::initialize() {
     log << "Conducting lazy best first search, (real) bound = " << bound << endl;
 
@@ -66,8 +106,18 @@ void LazySearch::initialize() {
 vector<OperatorID> LazySearch::get_successor_operators(
     const ordered_set::OrderedSet<OperatorID> &preferred_operators) const {
     vector<OperatorID> applicable_operators;
-    successor_generator.generate_applicable_ops(
+
+
+
+
+    // PR2: Override the successor generator to use the PR2 deadend aware one.
+    pr2_successor_generator->generate_applicable_ops(
         current_state, applicable_operators);
+    // successor_generator.generate_applicable_ops(
+    //     current_state, applicable_operators);
+
+
+
 
     if (randomize_successors) {
         rng->shuffle(applicable_operators);

@@ -69,12 +69,21 @@ RelaxationHeuristic::RelaxationHeuristic(
     for (OperatorProxy axiom : task_proxy.get_axioms())
         build_unary_operators(axiom);
 
+
+
+
+
+    // PR2: Disabled so that we don't remove some necessary operators
     // Simplify unary operators.
-    utils::Timer simplify_timer;
-    simplify();
-    if (log.is_at_least_normal()) {
-        log << "time to simplify: " << simplify_timer << endl;
-    }
+    // utils::Timer simplify_timer;
+    // simplify();
+    // if (log.is_at_least_normal()) {
+    //     log << "time to simplify: " << simplify_timer << endl;
+    // }
+
+
+
+    
 
     // Cross-reference unary operators.
     vector<vector<OpID>> precondition_of_vectors(propositions.size());

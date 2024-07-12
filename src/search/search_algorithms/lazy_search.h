@@ -11,6 +11,13 @@
 
 #include "../utils/rng.h"
 
+
+
+// PR2: Override the successor generator to use the PR2 deadend aware one.
+#include "../pr2/fd_integration/pr2_search_algorithm.h"
+
+
+
 #include <memory>
 #include <vector>
 
@@ -47,6 +54,13 @@ protected:
 
     std::vector<OperatorID> get_successor_operators(
         const ordered_set::OrderedSet<OperatorID> &preferred_operators) const;
+    
+
+
+    // PR2: Override the successor generator to use the PR2 deadend aware one.
+    DeadendAwareSuccessorGenerator *pr2_successor_generator;
+
+
 
 public:
     LazySearch(
@@ -57,6 +71,25 @@ public:
         int random_seed, OperatorCost cost_type, int bound,
         double max_time, const std::string &description,
         utils::Verbosity verbosity);
+    
+
+
+
+    // PR2: Modified to allow for specific task
+    LazySearch(
+        const std::shared_ptr<OpenListFactory> &open,
+        bool reopen_closed,
+        const std::vector<std::shared_ptr<Evaluator>> &evaluators,
+        bool randomize_successors, bool preferred_successors_first,
+        int random_seed, OperatorCost cost_type, int bound,
+        double max_time, const std::string &description,
+        utils::Verbosity verbosity,
+        const std::shared_ptr<AbstractTask> &newtask,
+        DeadendAwareSuccessorGenerator *pr2_successor_generator);
+
+
+    
+
 
     virtual void print_statistics() const override;
 };

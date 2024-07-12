@@ -943,3 +943,23 @@ create_fast_downward_library(
         algorithms/sccs
     DEPENDENCY_ONLY
 )
+
+create_fast_downward_library(
+    NAME PR2
+    HELP "Plugin containing the bulk of the PR2 meta search code"
+    SOURCES
+        pr2/deadend.cc
+        pr2/expand.cc
+        pr2/fond_search.cc
+        pr2/match_tree.cc
+        pr2/partial_state_graph.cc
+        pr2/policy.cc
+        pr2/regression.cc
+        pr2/simulator.cc
+        pr2/solution.cc
+        pr2/pr2.cc
+        pr2/fd_integration/partial_state.cc
+        pr2/fd_integration/pr2_search_algorithm.cc
+        pr2/fd_integration/fsap_penalized_ff_heuristic.cc
+        pr2/fd_integration/weak_planning_task.cc
+)

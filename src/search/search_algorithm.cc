@@ -86,6 +86,41 @@ SearchAlgorithm::SearchAlgorithm(const plugins::Options &opts) // TODO options o
     task_properties::print_variable_statistics(task_proxy);
 }
 
+
+
+
+
+// PR2: Modified to allow for specific task
+SearchAlgorithm::SearchAlgorithm(
+    OperatorCost cost_type, int bound, double max_time,
+    const string &description, utils::Verbosity verbosity,
+    const std::shared_ptr<AbstractTask> &newtask)
+    : description(description),
+      status(IN_PROGRESS),
+      solution_found(false),
+      task(newtask),
+      task_proxy(*task),
+      log(utils::get_log_for_verbosity(verbosity)),
+      state_registry(task_proxy),
+      successor_generator(get_successor_generator(task_proxy, log)),
+      search_space(state_registry, log),
+      statistics(log),
+      bound(bound),
+      cost_type(cost_type),
+      is_unit_cost(task_properties::is_unit_cost(task_proxy)),
+      max_time(max_time) {
+    if (bound < 0) {
+        cerr << "error: negative cost bound " << bound << endl;
+        utils::exit_with(ExitCode::SEARCH_INPUT_ERROR);
+    }
+    task_properties::print_variable_statistics(task_proxy);
+}
+
+
+
+
+
+
 SearchAlgorithm::~SearchAlgorithm() {
 }
 

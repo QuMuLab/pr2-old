@@ -552,8 +552,16 @@ public:
 
 bool does_fire(const EffectProxy &effect, const State &state);
 
+// PR2: Added for shared interface
+class StateInterface {
+public:
+    virtual void unpack() const = 0;
+    virtual const std::vector<int> &get_unpacked_values() const = 0;
+    virtual ~StateInterface() = default;
+};
 
-class State {
+class State : public StateInterface
+{
     /*
       TODO: We want to try out two things:
         1. having StateID and num_variables next to each other, so that they
@@ -632,7 +640,6 @@ public:
     */
     State get_unregistered_successor(const OperatorProxy &op) const;
 };
-
 
 namespace utils {
 inline void feed(HashState &hash_state, const State &state) {
