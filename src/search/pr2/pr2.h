@@ -135,7 +135,7 @@ struct PR2Wrapper {
     struct EPOCH {
 
         // Settings
-        int max = 1; // The number of epochs we want to perform
+        int number = 1; // The number of epochs we want to perform
 
         // Data structure to save and restart an epoch if no deadends were found
         PR2SearchStatus * last_search_status;
@@ -170,7 +170,7 @@ struct PR2Wrapper {
         int CONTROLLER = 3; // Basically the psgraph
         int LIST = 2; // Just a big if-then-else list
         int MATCHTREE = 1; // Proper match tree format
-        int format = LIST; // The type of output we want to use by default
+        int format = CONTROLLER; // The type of output we want to use by default
 
         // Data structures
 
@@ -356,8 +356,8 @@ struct PR2Wrapper {
 
         /**************************************************************/
 
-        else if (args[i].compare("--epoch-max") == 0)
-            epoch.max = stoi(args[++i]);
+        else if (args[i].compare("--epoch") == 0)
+            epoch.number = stoi(args[++i]);
 
         /**************************************************************/
 
@@ -511,7 +511,7 @@ struct PR2Wrapper {
         + "\t --deadend-poison-search 1/0 (default=" + to_string(deadend.poison_search) + ")\n"
         + "\t\t Prune parts of the search space if they would no longer be reached in the same way because of a found deadend / FSAP.\n\n"
         + "\n\n"
-        + "\t --epoch-max EPOCH_COUNT (default=" + to_string(epoch.max) + ")\n"
+        + "\t --epoch EPOCH_COUNT (default=" + to_string(epoch.number) + ")\n"
         + "\t\t Minimum number of times to execute the outer search loop for a policy. Useful if deadends are present and a single pass takes too long.\n\n"
         + "\n\n"
         + "\t --weaksearch-stop-on-policy 1/0 (default=" + to_string(weaksearch.stop_on_policy) + ")\n"

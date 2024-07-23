@@ -26,7 +26,17 @@ int main(int argc, const char **argv) {
             utils::g_log << "reading input..." << endl;
             tasks::read_root_task(cin);
             utils::g_log << "done reading input!" << endl;
+
+
+
+
+            // TODO: Change this over to the PR2 proxy
             TaskProxy task_proxy(*tasks::g_root_task);
+
+
+
+
+            
             unit_cost = task_properties::is_unit_cost(task_proxy);
         }
 
