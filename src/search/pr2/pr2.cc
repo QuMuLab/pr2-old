@@ -53,8 +53,8 @@ bool PR2Wrapper::run_pr2(shared_ptr<SearchAlgorithm> engine) {
     cout << "Max time for core phase (remaining used in final-round repairs): " << PR2.time.limit << endl;
 
     // Adjust the g_time_limit so the epochs are handled properly
-    int epochs_remaining = PR2.epoch.max;
-    double single_time_limit = PR2.time.limit / (double)PR2.epoch.max;
+    int epochs_remaining = PR2.epoch.number;
+    double single_time_limit = PR2.time.limit / (double)PR2.epoch.number;
     PR2.time.limit = single_time_limit;
 
     cout << "Max time for each of the " << epochs_remaining << " epochs: " << PR2.time.limit << endl << endl;
