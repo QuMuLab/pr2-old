@@ -19,7 +19,7 @@ FSAPPenalizedFFHeuristic::FSAPPenalizedFFHeuristic(
     shared_ptr<AbstractTask> task,
     bool cache_estimates,
     const string desc,
-    utils::Verbosity verb) : RelaxationHeuristic(task, cache_estimates, desc, verb),
+    utils::Verbosity verb) : RelaxationHeuristic(tasks::AxiomHandlingType::APPROXIMATE_NEGATIVE, task, cache_estimates, desc, verb),
       did_write_overflow_warning(false),
       relaxed_plan(task_proxy.get_operators().size(), false) {
     if (PR2.logging.verbose)
