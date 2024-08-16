@@ -23,7 +23,7 @@ private:
     PSGraph *containing_graph;
 
     void set_successor(int id, SolutionStep * s) {
-        assert (0 == succ[id]);
+        assert (succ[id] == nullptr);
         reset_successor(id, s);
     }
     void reset_successor(int id, SolutionStep * s) { succ[id] = s; }
