@@ -40,8 +40,15 @@ int main(int argc, const char **argv) {
             unit_cost = task_properties::is_unit_cost(task_proxy);
         }
 
+
+
+        // TODO: Instead of calling the vanilla parse_cmd_line, we should call the PR2 version (pr2.h::check_option)
+        //        -- The PR2 version needs to be changed to check all options, and just fail if something isn't recognized.
+        //        -- Also should assert that the --search option is pr2search()
         shared_ptr<SearchAlgorithm> search_algorithm =
             parse_cmd_line(argc, argv, unit_cost);
+
+
 
 
         utils::Timer search_timer;
