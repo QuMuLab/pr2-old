@@ -42,10 +42,10 @@ bool is_deadend(PR2State &state) {
     return (-1 == PR2.deadend.reachability_heuristic->compute_add_and_ff(state));
 }
 
-bool is_forbidden(PR2State &state, const PR2OperatorProxy *op) {
+bool is_forbidden(PR2State &state, const PR2OperatorProxy op) {
     vector<OperatorID> ops;
     PR2.generate_fsap_aware_applicable_ops(state, ops);
-    return op->is_possibly_applicable(state) && (find(ops.begin(), ops.end(), OperatorID(op->get_id())) == ops.end());
+    return op.is_possibly_applicable(state) && (find(ops.begin(), ops.end(), OperatorID(op.get_id())) == ops.end());
 }
 
 

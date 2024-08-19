@@ -226,7 +226,7 @@ bool Simulator::check_1safe() {
 
     // As a sanity check, make sure that we aren't forbidding the first action
     //  in the plan.
-    assert(!is_forbidden(*current_state, &(PR2.proxy->get_operators()[engine->get_plan()[0]])));
+    assert(!is_forbidden(*current_state, PR2.proxy->get_operators()[engine->get_plan()[0]]));
 
     return true;
 }

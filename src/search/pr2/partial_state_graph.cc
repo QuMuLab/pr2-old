@@ -163,8 +163,8 @@ void PSGraph::fixed_point_regression(SolutionStep * src,
         outcome += 1;
         if (succss) {
             int op_ind = PR2.general.nondet_mapping[new_src->op.nondet_index][outcome];
-            PR2OperatorProxy * used_op = &(PR2.proxy->get_operators()[op_ind]);
-            assert(new_src->state->entails(*(succss->state->regress(*used_op, src_node->full_state))));
+            PR2OperatorProxy used_op = PR2.proxy->get_operators()[op_ind];
+            assert(new_src->state->entails(*(succss->state->regress(used_op, src_node->full_state))));
         }
     }
 

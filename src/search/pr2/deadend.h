@@ -52,7 +52,7 @@ struct Deadend : FSAP {
 void update_deadends(vector< DeadendTuple * > &failed_states);
 
 bool is_deadend(PR2State &state);
-bool is_forbidden(PR2State &state, const PR2OperatorProxy *op);
+bool is_forbidden(PR2State &state, const PR2OperatorProxy op);
 
 bool generalize_deadend(PR2State &state);
 
