@@ -267,8 +267,11 @@ void PR2Wrapper::generate_nondet_operator_mappings() {
         if (op.get_name().find("_DETDUP_") == std::string::npos){
             PR2.general.nondet_outcome_mapping[op.get_id()] = 1;
         }
-        else
+        else {
+            cout << "lookie" << endl;
+            cout << op.get_name().substr(op.get_name().find("_DETDUP_") + 8) << endl;
             PR2.general.nondet_outcome_mapping[op.get_id()] = stoi(op.get_name().substr(op.get_name().find("_DETDUP_") + 8));
+        }
         op.nondet_index = nondet_name_to_index[op.get_nondet_name()];
         op.nondet_outcome = PR2.general.nondet_outcome_mapping[op.get_id()];
         (*nondet_index_map)[op.get_id()] = op.nondet_index;
@@ -283,7 +286,7 @@ void PR2Wrapper::generate_nondet_operator_mappings() {
     //TODO
     //Reinstantiate conditional mask and possibly nondetop2fspas
     //They were previously global and not instantiated anywhere
-    
+
 
     // /* Build the data structures required for mapping between the
     //  * deterministic actions and their non-deterministic equivalents. */
