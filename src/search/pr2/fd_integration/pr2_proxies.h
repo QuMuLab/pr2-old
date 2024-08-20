@@ -143,7 +143,8 @@ public:
     explicit PR2TaskProxy(const AbstractTask &task, PR2State init) : TaskProxy(task), task(&task), orig_initial_state(&init) {}
 
     PR2OperatorsProxy get_operators() const {
-        return PR2OperatorsProxy(TaskProxy::get_operators());
+        const OperatorsProxy &ops = TaskProxy::get_operators();
+        return PR2OperatorsProxy(ops);
     }
 
     void set_nondet_index_map(vector<int> &nmap) {

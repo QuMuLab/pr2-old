@@ -30,8 +30,6 @@ void generate_regressable_ops() {
 
     PR2State *s;
     for (const auto & op : PR2.proxy->get_operators()) {
-
-        // First, consider operators that lack conditional effects
         if (0 == PR2.general.conditional_mask[op.nondet_index]->size()) {
             s = new PR2State();
 
@@ -45,7 +43,6 @@ void generate_regressable_ops() {
         // Next, consider operators that have conditional effects that
         //  are consistent -- i.e., they can all fire simultaneously.
         else {
-
             s = new PR2State();
             bool consistent = true;
 
