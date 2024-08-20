@@ -114,9 +114,9 @@ public:
     PR2OperatorProxy operator[](std::size_t index) const {
         assert(index < size());
         // Call the parent [] method and cast the result to a PR2OperatorProxy
-        // OperatorProxy op = OperatorsProxy::operator[](index);
-        // return static_cast<PR2OperatorProxy &>(op);
-        return PR2OperatorProxy(*_task, index, false);
+        OperatorProxy op = OperatorsProxy::operator[](index);
+        return static_cast<PR2OperatorProxy &>(op);
+        // return PR2OperatorProxy(*_task, index, false);
     }
 
     PR2OperatorProxy operator[](OperatorID id) const {
@@ -140,7 +140,7 @@ class PR2TaskProxy : public TaskProxy {
 
 public:
 
-    PR2TaskProxy(const AbstractTask &task, PR2State init) : TaskProxy(task), task(&task), orig_initial_state(&init) {}
+    explicit PR2TaskProxy(const AbstractTask &task, PR2State init) : TaskProxy(task), task(&task), orig_initial_state(&init) {}
 
     PR2OperatorsProxy get_operators() const {
         return PR2OperatorsProxy(TaskProxy::get_operators());

@@ -9,6 +9,8 @@
 
 #include <iostream>
 
+#include "pr2/pr2.h"
+
 using namespace std;
 using utils::ExitCode;
 
@@ -27,44 +29,23 @@ int main(int argc, const char **argv) {
             tasks::read_root_task(cin);
             utils::g_log << "done reading input!" << endl;
 
-
-
-
-            // TODO: Change this over to the PR2 proxy
-            TaskProxy task_proxy(*tasks::g_root_task);
-
-
-
-
-            
-            unit_cost = task_properties::is_unit_cost(task_proxy);
+            const AbstractTask &task = *tasks::g_root_task;
+            PR2State init = PR2State(task.get_initial_state_values());
+            PR2TaskProxy *task_proxy = new PR2TaskProxy(task, init);
+            PR2.proxy = task_proxy;
+            unit_cost = task_properties::is_unit_cost(*task_proxy);
         }
 
+        // TODO: unit cost is not included?
+        // Does this need to be a vector of strings? The conversion seems redundant
+        std::vector<std::string> args(argv, argv + argc);
+        bool parsed = PR2.check_options(args);
+        if (!parsed) 
+            throw std::invalid_argument( "Parsing Failed" );
+        cout << PR2.deadend.generalize << endl;
 
+        PR2.run_pr2(PR2.pr2_engine);
 
-        // TODO: Instead of calling the vanilla parse_cmd_line, we should call the PR2 version (pr2.h::check_option)
-        //        -- The PR2 version needs to be changed to check all options, and just fail if something isn't recognized.
-        //        -- Also should assert that the --search option is pr2search()
-        shared_ptr<SearchAlgorithm> search_algorithm =
-            parse_cmd_line(argc, argv, unit_cost);
-
-
-
-
-        utils::Timer search_timer;
-        search_algorithm->search();
-        search_timer.stop();
-        utils::g_timer.stop();
-
-        search_algorithm->save_plan_if_necessary();
-        search_algorithm->print_statistics();
-        utils::g_log << "Search time: " << search_timer << endl;
-        utils::g_log << "Total time: " << utils::g_timer << endl;
-
-        ExitCode exitcode = search_algorithm->found_solution()
-            ? ExitCode::SUCCESS
-            : ExitCode::SEARCH_UNSOLVED_INCOMPLETE;
-        exit_with(exitcode);
     } catch (const utils::ExitException &e) {
         /* To ensure that all destructors are called before the program exits,
            we raise an exception in utils::exit_with() and let main() return. */
