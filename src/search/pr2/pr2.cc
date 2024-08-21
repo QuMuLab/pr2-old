@@ -24,6 +24,10 @@ bool PR2Wrapper::run_pr2(shared_ptr<SearchAlgorithm> engine) {
     /**********************************
      * Initialize the data structures *
      **********************************/
+    PR2.general.num_vars = PR2.proxy->get_variables().size();
+    PR2.general.goal_op = PR2.proxy->get_goal_operator();
+
+    cout << "here" << endl;
 
     if (PR2.deadend.enabled)
         generate_regressable_ops();
@@ -71,8 +75,9 @@ bool PR2Wrapper::run_pr2(shared_ptr<SearchAlgorithm> engine) {
 
     cout << "\n\nGenerating an incumbent solution..." << endl;
     PR2.solution.incumbent = new Solution(sim);
+    cout << "here" << endl;
     PR2.solution.best = PR2.solution.incumbent;
-
+    cout << "here" << endl;
 
 
 
@@ -256,14 +261,21 @@ void PR2Wrapper::generate_nondet_operator_mappings() {
     int current_nondet_index = 0;
     
     for (auto op : PR2.proxy->get_operators()) {
+        cout << op.get_nondet_name() << endl;
+        //If not in the mapping yet
         if (nondet_name_to_index.find(op.get_nondet_name()) == nondet_name_to_index.end()) {
             nondet_name_to_index[op.get_nondet_name()] = current_nondet_index;
             PR2.general.nondet_mapping.push_back(vector<int>());
             current_nondet_index++;
+
+
+
+            PR2.general.conditional_mask.push_back(new vector<int>());
+            PR2.deadend.nondetop2fsaps.push_back(new vector< FSAP* >());
         }
         PR2.general.nondet_mapping[nondet_name_to_index[op.get_nondet_name()]].push_back(op.get_id());
         // outcome id comes from action name after _DETDUP_. The "8" is length of "_DETDUP_"
-        //Some elements don't have detdup
+        //Some elements don't have detdup, they have an assignment of 1
         if (op.get_name().find("_detdup_") == std::string::npos){
             PR2.general.nondet_outcome_mapping[op.get_id()] = 1;
         } else {
@@ -273,12 +285,23 @@ void PR2Wrapper::generate_nondet_operator_mappings() {
         op.nondet_index = nondet_name_to_index[op.get_nondet_name()];
         op.nondet_outcome = PR2.general.nondet_outcome_mapping[op.get_id()];
         (*nondet_index_map)[op.get_id()] = op.nondet_index;
+
+        for (auto eff : op.get_all_effects()) {
+            for (auto cond : eff.get_conditions()) {
+                vector<int> *var_list = PR2.general.conditional_mask[op.nondet_index];
+                if (find(var_list->begin(), var_list->end(), cond.get_variable().get_id()) == var_list->end())
+                    PR2.general.conditional_mask[op.nondet_index]->push_back(cond.get_variable().get_id());
+            }
+        }
     }
 
     PR2.proxy->set_nondet_index_map(*nondet_index_map);
 
-    for (auto what : *nondet_index_map) {
+    for (auto what : PR2.general.nondet_mapping) {
         cout << what << endl;
+    }
+    for (auto what : PR2.general.nondet_outcome_mapping) {
+        cout << what.first << " " << what.second << endl;
     }
 
     //TODO

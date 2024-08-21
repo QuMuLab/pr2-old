@@ -34,12 +34,12 @@ void generate_regressable_ops() {
             s = new PR2State();
 
             // Only applicable if the effects currently hold.
-            for (auto eff : op.get_effects())
+            for (auto eff : op.get_effects()) {
                 (*s)[eff.get_fact().get_variable().get_id()] = eff.get_fact().get_value();
+            }
 
             reg_steps.push_back(new RegressableOperator(op, s));
         }
-
         // Next, consider operators that have conditional effects that
         //  are consistent -- i.e., they can all fire simultaneously.
         else {
