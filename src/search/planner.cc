@@ -23,16 +23,15 @@ int main(int argc, const char **argv) {
             utils::exit_with(ExitCode::SEARCH_INPUT_ERROR);
         }
 
-        bool unit_cost = false;
         if (static_cast<string>(argv[1]) != "--help") {
             utils::g_log << "reading input..." << endl;
             tasks::read_root_task(cin);
             utils::g_log << "done reading input!" << endl;
 
             const AbstractTask &task = *tasks::g_root_task;
-            PR2TaskProxy *task_proxy = new PR2TaskProxy(task, PR2State(task.get_initial_state_values()));
+            PR2TaskProxy *task_proxy = new PR2TaskProxy(task, new PR2State(task.get_initial_state_values()));
+
             PR2.proxy = task_proxy;
-            unit_cost = task_properties::is_unit_cost(*task_proxy);
         }
 
         // TODO: unit cost is not included?

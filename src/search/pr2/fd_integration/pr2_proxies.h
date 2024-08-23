@@ -31,7 +31,7 @@ class PR2OperatorProxy;
 class PR2GoalProxy;
 
 class PR2OperatorProxy : public OperatorProxy {
-    const AbstractTask *task;
+    const AbstractTask *_task;
     int _index;
     bool _is_an_axiom;
 
@@ -43,7 +43,7 @@ public:
     PR2State *all_fire_context;
 
     PR2OperatorProxy(const AbstractTask &task, int index, bool is_axiom)
-        : OperatorProxy(task, index, is_axiom), task(&task), _index(index), _is_an_axiom(is_axiom) {
+        : OperatorProxy(task, index, is_axiom), _task(&task), _index(index), _is_an_axiom(is_axiom) {
         update_nondet_info();
     }
 
@@ -112,14 +112,14 @@ public:
 
     explicit PR2OperatorsProxy(const AbstractTask &task) : OperatorsProxy(task), _task(&task) {}
 
-    PR2OperatorsProxy(const OperatorsProxy& ops) : OperatorsProxy(ops) {}
+    PR2OperatorsProxy(const OperatorsProxy& ops, const AbstractTask &task) : OperatorsProxy(ops), _task(&task) {}
 
     PR2OperatorProxy operator[](std::size_t index) const {
         assert(index < size());
         // Call the parent [] method and cast the result to a PR2OperatorProxy
-        OperatorProxy op = OperatorsProxy::operator[](index);
-        return static_cast<PR2OperatorProxy &>(op);
-        // return PR2OperatorProxy(*_task, index, false);
+        // OperatorProxy op = OperatorsProxy::operator[](index);
+        // return static_cast<PR2OperatorProxy &>(op);
+        return PR2OperatorProxy(*_task, index, false);
     }
 
     PR2OperatorProxy operator[](OperatorID id) const {
@@ -191,11 +191,11 @@ class PR2TaskProxy : public TaskProxy {
 
 public:
 
-    explicit PR2TaskProxy(const AbstractTask &task, PR2State init) : TaskProxy(task), task(&task), orig_initial_state(&init) {}
+    explicit PR2TaskProxy(const AbstractTask &task, PR2State *init) : TaskProxy(task), task(&task), orig_initial_state(init) {}
 
     PR2OperatorsProxy get_operators() const {
         const OperatorsProxy &ops = TaskProxy::get_operators();
-        return PR2OperatorsProxy(ops);
+        return PR2OperatorsProxy(ops, *task);
     }
 
     PR2GoalProxy * get_goal_operator() const {
@@ -206,6 +206,8 @@ public:
         nondet_index_map = &nmap;
     }
     int get_nondet_index(int op_id) const {
+        if (nondet_index_map == nullptr)
+            return -1;
         return (*nondet_index_map)[op_id];
     }
     int get_nondet_index(OperatorID op) const {
