@@ -25,9 +25,13 @@ bool PR2Wrapper::run_pr2(shared_ptr<SearchAlgorithm> engine) {
      * Initialize the data structures *
      **********************************/
     PR2.general.num_vars = PR2.proxy->get_variables().size();
+
     PR2.general.goal_op = PR2.proxy->get_goal_operator();
 
-    cout << "here" << endl;
+    //Load bearing print statement?!?
+    //Removing this line causes generate_regressable_ops to fail
+    //How?
+    cout << "HERE?" << endl;
 
     if (PR2.deadend.enabled)
         generate_regressable_ops();
@@ -75,17 +79,30 @@ bool PR2Wrapper::run_pr2(shared_ptr<SearchAlgorithm> engine) {
 
     cout << "\n\nGenerating an incumbent solution..." << endl;
     PR2.solution.incumbent = new Solution(sim);
-    cout << "here" << endl;
     PR2.solution.best = PR2.solution.incumbent;
-    cout << "here" << endl;
-
-
 
     /********************************
      * Do the main computation loop *
      ********************************/
 
     cout << "\n\nBeginning search for strong cyclic solution..." << endl;
+
+    cout << "Verify all relevant data sructures" << endl;
+
+    PR2.solution.incumbent->policy->dump();
+    PR2.solution.best->policy->dump();
+    cout << PR2.general.nondet_mapping << endl;
+    for(auto elem: PR2.general.nondet_outcome_mapping)
+        cout << "[" << elem.first << ", " << elem.second << "]" << ", ";
+    cout << endl;
+    for(auto elem: PR2.general.conditional_mask){
+        for (int elem2 : *elem) {
+            cout << "[" << elem2 << "]" << ", ";
+        }
+    }
+    cout << endl;
+
+    cout << "Data structures verified" << endl;
 
     while (find_better_solution(sim)) {
         if (PR2.logging.verbose)
@@ -261,7 +278,6 @@ void PR2Wrapper::generate_nondet_operator_mappings() {
     int current_nondet_index = 0;
     
     for (auto op : PR2.proxy->get_operators()) {
-        cout << op.get_nondet_name() << endl;
         //If not in the mapping yet
         if (nondet_name_to_index.find(op.get_nondet_name()) == nondet_name_to_index.end()) {
             nondet_name_to_index[op.get_nondet_name()] = current_nondet_index;
@@ -296,13 +312,6 @@ void PR2Wrapper::generate_nondet_operator_mappings() {
     }
 
     PR2.proxy->set_nondet_index_map(*nondet_index_map);
-
-    for (auto what : PR2.general.nondet_mapping) {
-        cout << what << endl;
-    }
-    for (auto what : PR2.general.nondet_outcome_mapping) {
-        cout << what.first << " " << what.second << endl;
-    }
 
     //TODO
     //Reinstantiate conditional mask and possibly nondetop2fspas

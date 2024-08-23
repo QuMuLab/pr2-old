@@ -30,8 +30,7 @@ int main(int argc, const char **argv) {
             utils::g_log << "done reading input!" << endl;
 
             const AbstractTask &task = *tasks::g_root_task;
-            PR2State init = PR2State(task.get_initial_state_values());
-            PR2TaskProxy *task_proxy = new PR2TaskProxy(task, init);
+            PR2TaskProxy *task_proxy = new PR2TaskProxy(task, PR2State(task.get_initial_state_values()));
             PR2.proxy = task_proxy;
             unit_cost = task_properties::is_unit_cost(*task_proxy);
         }
@@ -42,7 +41,6 @@ int main(int argc, const char **argv) {
         bool parsed = PR2.check_options(args);
         if (!parsed) 
             throw std::invalid_argument( "Parsing Failed" );
-        cout << PR2.deadend.generalize << endl;
 
         PR2.run_pr2(PR2.pr2_engine);
 

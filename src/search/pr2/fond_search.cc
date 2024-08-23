@@ -33,50 +33,43 @@ bool find_better_solution(Simulator *sim) {
 
         cout << "Starting a fresh search..." << endl;
         status = new PR2SearchStatus(sim);
-        cout << "here" << endl;
 
         // For now, we only record the search nodes if we need them in snapshots
         if (PR2.logging.dump_snapshots)
             status->created_search_nodes = new list< PR2SearchNode * >();
 
-        cout << "here" << endl;
         // Back up the originial initial state
         status->old_initial_state = PR2.proxy->generate_new_init();
-        cout << "here" << endl;
         // Build the goal state
         status->goal_orig = new PR2State();
         for (auto goal_pair : PR2.proxy->get_goals())
             (*(status->goal_orig))[goal_pair.get_variable().get_id()] = goal_pair.get_value();
-        cout << "here" << endl;
+
         status->init();
-        cout << "here" << endl;
         status->current_state = PR2.proxy->generate_new_init();
         status->current_goal = new PR2State(*(status->goal_orig));
-        cout << "here" << endl;
+
         PR2SearchNode *init_node = new PR2SearchNode(status->current_state, status->current_goal, NULL, NULL, -1);
         if (status->created_search_nodes)
             status->created_search_nodes->push_back(init_node);
         status->open_list->push(init_node);
-        cout << "here" << endl;
+
         status->created_states->push_back(status->current_state);
         status->created_states->push_back(status->current_goal);
     }
-    cout << "here" << endl;
+
     if (!PR2.logging.fond_search)
         cout << "\n {" << flush;
-    cout << "here" << endl;
+
     // Keep going while there's still time and until we've closed off
     //  the entire open list or found a strong cyclic incumbent.
     while (status->keep_searching() && !(PR2.solution.incumbent->is_strong_cyclic())) {
-        cout << "here1" << endl;
         // Commonly used snapshot logging code
         status->validate_if_needbe();
         status->snapshot_if_needbe();
 
-        cout << "here" << endl;
         // Kick things off by selecting the next PR2SearchNode
         status->pop_next_node();
-        cout << "here" << endl;
 
         /**************************************************************
          * There are six possible ways to handle a new search state
@@ -118,38 +111,37 @@ bool find_better_solution(Simulator *sim) {
         // Case 1 //
         // Don't bother doing anything if this is dead search space
         handled_state = case1_poisoned_node(status);
-        cout << "here" << endl;
+
         // Case 2 //
         // If we've seen the state, then we need to re-write the nodes
         //  and solsteps so that we have a proper merger.
         if (!handled_state)
             handled_state = case2_match_complete_state(status);
-        cout << "here" << endl;
         // If the node isn't poised or a duplicate, then we record it as a new state in the seen list, etc.
         if (!handled_state)
             status->record_new_state();
-        cout << "here" << endl;
+
         // Case 3 //
         // See if this part of the solution graph is already done
         if (!handled_state)
             handled_state = case3_predefined_path(status);
-        cout << "here" << endl;
+
         // Case 4 //
         // See if we can hook things up in the solution graph
         if (!handled_state)
             handled_state = case4_hookup_solsteps(status);
-        cout << "here" << endl;
+
         // Case 5 //
         // See if we can find a new path to the solution graph
         if (!handled_state)
             handled_state = case5_new_path(status);
-        cout << "here" << endl;
+
         // Case 6 //
         // When all else fails, this must be a deadend state
         bool failed_initial_state = false;
         if (!handled_state)
             failed_initial_state = case6_deadend(status);
-        cout << "here" << endl;
+
         if (failed_initial_state)
             return false;
     }
@@ -206,34 +198,26 @@ bool find_better_solution(Simulator *sim) {
 // Case 1 //
 // See if this node is poisoned, or should be flagged as such //
 bool case1_poisoned_node(PR2SearchStatus * SS) {
-    cout << "here2" << endl;
     if (!PR2.deadend.poison_search)
         return false;
 
     SS->last_round_type = "(case-1) Poisoned node";
 
     bool poisoned = false;
-    cout << "here3" << endl;
-    SS->current_state->dump_fdr();
-    cout << SS->current_node->poisoned << endl;
-    cout << PR2.deadend.states->size() << endl;
-    cout << "here3" << endl;
+
     // See if we're already poisoned
     if (SS->current_node->poisoned)
         poisoned = true;
     // Check if this state is a recognized deadend
     else if (PR2.deadend.states->check_entailed_match(*(SS->current_state)) ||
              is_deadend(*(SS->current_state))) {
-        cout << "here2" << endl;
         poisoned = true;
         SS->poisoned = true;
         SS->current_node->poison();
         SS->mark_current_state_failed();
     }
 
-    cout << "here2" << endl;
     if (poisoned && PR2.logging.fond_search) {
-        cout << "here2" << endl;
         cout << "\nFONDSEARCH(" << PR2.logging.id() << "): Current node found to be poisoned:" << endl;
         SS->current_node->dump();
     }

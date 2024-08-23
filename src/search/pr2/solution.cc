@@ -18,19 +18,15 @@ SolutionStep::SolutionStep(PR2State *s, PSGraph *psg, int d, const PR2OperatorPr
     // Resize the successors to the right number of outcomes. Change
     //  this if you have a complex nondet successor function in the
     //  expand.* files.
-    cout << "here1" << endl;
     if (!is_g)
         succ.resize(PR2.general.nondet_mapping[op.nondet_index].size(), nullptr);
-    cout << "here1" << endl;
     // Inform the PSGraph that we've created another SolutionStep
     containing_graph->add_step(this);
 
-    cout << "here1" << endl;
     #ifndef NDEBUG
     if (PR2.logging.log_solstep(step_id))
         cout << "\nSOLSTEP(" << PR2.logging.id() << "): Created new step " << step_id << endl;
     #endif
-    cout << "here1" << endl;
 }
 
 SolutionStep* SolutionStep::copy() {
@@ -232,19 +228,14 @@ Solution::Solution(Simulator *sim) {
     network = new PSGraph();
     policy = new Policy();
 
-    cout << "here" << endl;
     // Create an initial default goal solution step
     PR2State * gs = new PR2State();
-    cout << "here" << endl;
     for (auto goal_tuple : PR2.localize.original_goal)
         (*gs)[goal_tuple.first] = goal_tuple.second;
 
-    cout << "here2" << endl;
     //  *(PR2.general.goal_op) is undefined
     SolutionStep * gss = new SolutionStep(gs, network, 0, *(PR2.general.goal_op), -1, true, true, true);
-    cout << "here" << endl;
     policy->add_item(gss);
-    cout << "here" << endl;
     network->goal = gss;
 }
 
