@@ -1,5 +1,5 @@
 
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 #maintainer information
 LABEL maintainer="Christian Muise (christian.muise@queensu.ca)"
@@ -22,7 +22,11 @@ RUN apt-get install -y \
         dos2unix \
         graphviz \
         time \
-        bc
+        bc \
+        libboost-all-dev \
+        libgmp3-dev \
+        gap \
+        nauty 
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y expect
 
@@ -43,7 +47,8 @@ RUN pip3 install --upgrade pip
 RUN pip3 install --upgrade graphviz
 RUN pip3 install --upgrade networkx
 RUN pip3 install --upgrade pydot
-
+RUN pip3 install --upgrade typed-argument-parser
+RUN pip3 install --upgrade argcomplete
 
 # Grab the other planners
 WORKDIR /PLANNERS
@@ -58,6 +63,17 @@ RUN cd mynd && ./build.sh
 RUN git clone https://github.com/ramonpereira/paladinus.git
 
 RUN git clone https://github.com/QuMuLab/planner-for-relevant-policies.git prp
+
+RUN git clone https://github.com/Frederico-Messa/And-Star-Project.git and_star
+RUN cd and_star && make
+
+RUN git clone https://github.com/ssardina-research/cfond-asp.git cfond
+RUN cd cfond && pip install -r requirements.txt
+
+# Add clingo for Cfond
+RUN add-apt-repository ppa:potassco/stable
+RUN apt install -y clingo
+
 RUN cd prp/src && ./build_all -j 8
 
 RUN mkdir /PLANNERS/bin
@@ -78,6 +94,12 @@ RUN echo "/PLANNERS/prp/src/prp \$@" >> /PLANNERS/bin/prp
 
 RUN echo "#!/bin/bash" >> /PLANNERS/bin/pr2
 RUN echo "/PROJECT/pr2 \$@" >> /PLANNERS/bin/pr2
+
+RUN echo "#!/bin/bash" >> /PLANNERS/bin/and_star
+RUN echo "python /PLANNERS/and_star/and_star.py \$@" >> /PLANNERS/bin/and_star
+
+RUN echo "#!/bin/bash" >> /PLANNERS/bin/cfond
+RUN echo "python /PLANNERS/cfond/src/python/main.py --output cfond_output \$@" >> /PLANNERS/bin/cfond
 
 # Update the PATH variable and permissions
 ENV PATH="/PLANNERS/bin:${PATH}"

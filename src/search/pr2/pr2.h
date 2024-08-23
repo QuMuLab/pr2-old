@@ -315,173 +315,182 @@ struct PR2Wrapper {
     /************************************************************
      * Used to seed all of the options in the underlying solver *
      ************************************************************/
-    bool check_option(const vector<string> &args, bool is_last, size_t &i) {
+    bool check_options(const vector<string> &args) {
 
-        // PR2 /always/ expects key-value options
-        if (is_last)
-            return false;
+        //The first element of args is the path
+        for (unsigned int i = 1; i < args.size(); i++) {
+            /**************************************************************/
 
-        /**************************************************************/
+            if (args[i].compare("--solution-evaluation-trials") == 0)
+                solution.evaluation_trials = stoi(args[++i]);
 
-        if (args[i].compare("--solution-evaluation-trials") == 0)
-            solution.evaluation_trials = stoi(args[++i]);
+            /**************************************************************/
 
-        /**************************************************************/
+            else if (args[i].compare("--time-limit") == 0)
+                time.limit = (double)stof(args[++i]);
 
-        else if (args[i].compare("--time-limit") == 0)
-            time.limit = (double)stof(args[++i]);
+            /**************************************************************/
 
-        /**************************************************************/
+            
+            else if (args[i].compare("--search") == 0)
+                assert(args[++i] == "pr2search()");
 
-        else if (args[i].compare("--deadend-enabled") == 0)
-            deadend.enabled = (1 == stoi(args[++i]));
-
-        else if (args[i].compare("--deadend-generalize") == 0)
-            deadend.generalize = (1 == stoi(args[++i]));
-
-        else if (args[i].compare("--deadend-record-online") == 0)
-            deadend.record_online = (1 == stoi(args[++i]));
-
-        else if (args[i].compare("--deadend-combine") == 0)
-            deadend.combine = (1 == stoi(args[++i]));
-
-        else if (args[i].compare("--deadend-regress-trigger-only") == 0)
-            deadend.regress_trigger_only = (1 == stoi(args[++i]));
-
-        else if (args[i].compare("--deadend-force-1safe-weak-plans") == 0)
-            deadend.force_1safe_weak_plans = (1 == stoi(args[++i]));
-
-        else if (args[i].compare("--deadend-poison-search") == 0)
-            deadend.poison_search = (1 == stoi(args[++i]));
-
-        /**************************************************************/
-
-        else if (args[i].compare("--epoch") == 0)
-            epoch.number = stoi(args[++i]);
-
-        /**************************************************************/
-
-        else if (args[i].compare("--weaksearch-stop-on-policy") == 0)
-            weaksearch.stop_on_policy = (1 == stoi(args[++i]));
-
-        else if (args[i].compare("--weaksearch-penalize-potential-fsaps") == 0)
-            weaksearch.penalize_potential_fsaps = (1 == stoi(args[++i]));
-
-        else if (args[i].compare("--weaksearch-fsap-penalty") == 0)
-            weaksearch.fsap_penalty = stoi(args[++i]);
-
-        /**************************************************************/
-
-        else if (args[i].compare("--output-format") == 0)
-            output.format = stoi(args[++i]);
-
-        /**************************************************************/
-
-        else if (args[i].compare("--fondsearch-node-preference") == 0)
-            fondsearch.node_preference = stoi(args[++i]);
-
-        /**************************************************************/
-
-        else if (args[i].compare("--localize-enabled") == 0)
-            localize.enabled = (1 == stoi(args[++i]));
-
-        else if (args[i].compare("--localize-generalize") == 0)
-            localize.generalize = (1 == stoi(args[++i]));
-
-        else if (args[i].compare("--localize-limited") == 0)
-            localize.limited = (1 == stoi(args[++i]));
-
-        else if (args[i].compare("--localize-max-states") == 0)
-            localize.max_states = stoi(args[++i]);
-
-        /**************************************************************/
-
-        else if (args[i].compare("--psgraph-full-scd-marking") == 0)
-            psgraph.full_scd_marking = (1 == stoi(args[++i]));
-
-        else if (args[i].compare("--psgraph-clear-dead-solsteps") == 0)
-            psgraph.clear_dead_solsteps = (1 == stoi(args[++i]));
-
-        /**************************************************************/
-
-        else if (args[i].compare("--simulator-trial-depth") == 0)
-            simulator.trial_depth = stoi(args[++i]);
-
-        else if (args[i].compare("--simulator-num-trials") == 0)
-            simulator.num_trials = stoi(args[++i]);
-
-        /**************************************************************/
-
-        else if (args[i].compare("--logging-solstep-watch-list") == 0) {
-            stringstream ss(args[++i]);
-            string item;
-            while (getline(ss, item, ',')) {
-                logging.solstep_watch_list.insert(atoi(item.c_str()));
+            else if (args[i].compare("--internal-plan-file") == 0) {
+                ++i;continue;
             }
-        }
 
-        else if (args[i].compare("--logging-searchnode-watch-list") == 0) {
-            stringstream ss(args[++i]);
-            string item;
-            while (getline(ss, item, ',')) {
-                logging.searchnode_watch_list.insert(atoi(item.c_str()));
+            /**************************************************************/ 
+
+            else if (args[i].compare("--deadend-enabled") == 0)
+                deadend.enabled = (1 == stoi(args[++i]));
+
+            else if (args[i].compare("--deadend-generalize") == 0)
+                deadend.generalize = (1 == stoi(args[++i]));
+
+            else if (args[i].compare("--deadend-record-online") == 0)
+                deadend.record_online = (1 == stoi(args[++i]));
+
+            else if (args[i].compare("--deadend-combine") == 0)
+                deadend.combine = (1 == stoi(args[++i]));
+
+            else if (args[i].compare("--deadend-regress-trigger-only") == 0)
+                deadend.regress_trigger_only = (1 == stoi(args[++i]));
+
+            else if (args[i].compare("--deadend-force-1safe-weak-plans") == 0)
+                deadend.force_1safe_weak_plans = (1 == stoi(args[++i]));
+
+            else if (args[i].compare("--deadend-poison-search") == 0)
+                deadend.poison_search = (1 == stoi(args[++i]));
+
+            /**************************************************************/
+
+            else if (args[i].compare("--epoch") == 0)
+                epoch.number = stoi(args[++i]);
+
+            /**************************************************************/
+
+            else if (args[i].compare("--weaksearch-stop-on-policy") == 0)
+                weaksearch.stop_on_policy = (1 == stoi(args[++i]));
+
+            else if (args[i].compare("--weaksearch-penalize-potential-fsaps") == 0)
+                weaksearch.penalize_potential_fsaps = (1 == stoi(args[++i]));
+
+            else if (args[i].compare("--weaksearch-fsap-penalty") == 0)
+                weaksearch.fsap_penalty = stoi(args[++i]);
+
+            /**************************************************************/
+
+            else if (args[i].compare("--output-format") == 0)
+                output.format = stoi(args[++i]);
+
+            /**************************************************************/
+
+            else if (args[i].compare("--fondsearch-node-preference") == 0)
+                fondsearch.node_preference = stoi(args[++i]);
+
+            /**************************************************************/
+
+            else if (args[i].compare("--localize-enabled") == 0)
+                localize.enabled = (1 == stoi(args[++i]));
+
+            else if (args[i].compare("--localize-generalize") == 0)
+                localize.generalize = (1 == stoi(args[++i]));
+
+            else if (args[i].compare("--localize-limited") == 0)
+                localize.limited = (1 == stoi(args[++i]));
+
+            else if (args[i].compare("--localize-max-states") == 0)
+                localize.max_states = stoi(args[++i]);
+
+            /**************************************************************/
+
+            else if (args[i].compare("--psgraph-full-scd-marking") == 0)
+                psgraph.full_scd_marking = (1 == stoi(args[++i]));
+
+            else if (args[i].compare("--psgraph-clear-dead-solsteps") == 0)
+                psgraph.clear_dead_solsteps = (1 == stoi(args[++i]));
+
+            /**************************************************************/
+
+            else if (args[i].compare("--simulator-trial-depth") == 0)
+                simulator.trial_depth = stoi(args[++i]);
+
+            else if (args[i].compare("--simulator-num-trials") == 0)
+                simulator.num_trials = stoi(args[++i]);
+
+            /**************************************************************/
+
+            else if (args[i].compare("--logging-solstep-watch-list") == 0) {
+                stringstream ss(args[++i]);
+                string item;
+                while (getline(ss, item, ',')) {
+                    logging.solstep_watch_list.insert(atoi(item.c_str()));
+                }
             }
+
+            else if (args[i].compare("--logging-searchnode-watch-list") == 0) {
+                stringstream ss(args[++i]);
+                string item;
+                while (getline(ss, item, ',')) {
+                    logging.searchnode_watch_list.insert(atoi(item.c_str()));
+                }
+            }
+
+            else if (args[i].compare("--logging-verbose") == 0)
+                logging.verbose = (1 == stoi(args[++i]));
+
+            else if (args[i].compare("--logging-dump-snapshots") == 0)
+                logging.dump_snapshots = (1 == stoi(args[++i]));
+
+            else if (args[i].compare("--logging-validate-network-and-nodes") == 0)
+                logging.validate_network_and_nodes = (1 == stoi(args[++i]));
+
+            else if (args[i].compare("--logging-disable-state-dump") == 0)
+                logging.disable_state_dump = (1 == stoi(args[++i]));
+
+            else if (args[i].compare("--logging-heuristic") == 0)
+                logging.heuristic = (1 == stoi(args[++i]));
+
+            else if (args[i].compare("--logging-weak-search") == 0)
+                logging.weak_search = (1 == stoi(args[++i]));
+
+            else if (args[i].compare("--logging-fond-search") == 0)
+                logging.fond_search = (1 == stoi(args[++i]));
+
+            else if (args[i].compare("--logging-fond-search-expanding") == 0)
+                logging.fond_search_expanding = (1 == stoi(args[++i]));
+
+            else if (args[i].compare("--logging-simulator") == 0)
+                logging.simulator = (1 == stoi(args[++i]));
+
+            else if (args[i].compare("--logging-psgraph") == 0)
+                logging.psgraph = (1 == stoi(args[++i]));
+
+            else if (args[i].compare("--logging-psgraph-condensed") == 0)
+                logging.psgraph_condensed = (1 == stoi(args[++i]));
+
+            else if (args[i].compare("--logging-deadends") == 0)
+                logging.deadends = (1 == stoi(args[++i]));
+
+            else if (args[i].compare("--logging-network-assertions") == 0)
+                logging.network_assertions = (1 == stoi(args[++i]));
+
+            else if (args[i].compare("--logging-poisoning") == 0)
+                logging.poisoning = (1 == stoi(args[++i]));
+
+            /**************************************************************/
+
+            else if (args[i].compare("--final-fsap-free-round") == 0)
+                general.final_fsap_free_round = (1 == stoi(args[++i]));
+
+            else if (args[i].compare("--optimize-final-solution") == 0)
+                general.optimize_final_solution = (1 == stoi(args[++i]));
+
+            /**************************************************************/
+
+            else
+                throw std::invalid_argument( "Unknown argument: {" + args[i] + "}" );
         }
-
-        else if (args[i].compare("--logging-verbose") == 0)
-            logging.verbose = (1 == stoi(args[++i]));
-
-        else if (args[i].compare("--logging-dump-snapshots") == 0)
-            logging.dump_snapshots = (1 == stoi(args[++i]));
-
-        else if (args[i].compare("--logging-validate-network-and-nodes") == 0)
-            logging.validate_network_and_nodes = (1 == stoi(args[++i]));
-
-        else if (args[i].compare("--logging-disable-state-dump") == 0)
-            logging.disable_state_dump = (1 == stoi(args[++i]));
-
-        else if (args[i].compare("--logging-heuristic") == 0)
-            logging.heuristic = (1 == stoi(args[++i]));
-
-        else if (args[i].compare("--logging-weak-search") == 0)
-            logging.weak_search = (1 == stoi(args[++i]));
-
-        else if (args[i].compare("--logging-fond-search") == 0)
-            logging.fond_search = (1 == stoi(args[++i]));
-
-        else if (args[i].compare("--logging-fond-search-expanding") == 0)
-            logging.fond_search_expanding = (1 == stoi(args[++i]));
-
-        else if (args[i].compare("--logging-simulator") == 0)
-            logging.simulator = (1 == stoi(args[++i]));
-
-        else if (args[i].compare("--logging-psgraph") == 0)
-            logging.psgraph = (1 == stoi(args[++i]));
-
-        else if (args[i].compare("--logging-psgraph-condensed") == 0)
-            logging.psgraph_condensed = (1 == stoi(args[++i]));
-
-        else if (args[i].compare("--logging-deadends") == 0)
-            logging.deadends = (1 == stoi(args[++i]));
-
-        else if (args[i].compare("--logging-network-assertions") == 0)
-            logging.network_assertions = (1 == stoi(args[++i]));
-
-        else if (args[i].compare("--logging-poisoning") == 0)
-            logging.poisoning = (1 == stoi(args[++i]));
-
-        /**************************************************************/
-
-        else if (args[i].compare("--final-fsap-free-round") == 0)
-            general.final_fsap_free_round = (1 == stoi(args[++i]));
-
-        else if (args[i].compare("--optimize-final-solution") == 0)
-            general.optimize_final_solution = (1 == stoi(args[++i]));
-
-        /**************************************************************/
-
-        else
-            return false;
 
         return true;
     }

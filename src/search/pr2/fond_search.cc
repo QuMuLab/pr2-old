@@ -40,14 +40,12 @@ bool find_better_solution(Simulator *sim) {
 
         // Back up the originial initial state
         status->old_initial_state = PR2.proxy->generate_new_init();
-
         // Build the goal state
         status->goal_orig = new PR2State();
         for (auto goal_pair : PR2.proxy->get_goals())
             (*(status->goal_orig))[goal_pair.get_variable().get_id()] = goal_pair.get_value();
 
         status->init();
-
         status->current_state = PR2.proxy->generate_new_init();
         status->current_goal = new PR2State(*(status->goal_orig));
 
@@ -66,7 +64,6 @@ bool find_better_solution(Simulator *sim) {
     // Keep going while there's still time and until we've closed off
     //  the entire open list or found a strong cyclic incumbent.
     while (status->keep_searching() && !(PR2.solution.incumbent->is_strong_cyclic())) {
-
         // Commonly used snapshot logging code
         status->validate_if_needbe();
         status->snapshot_if_needbe();
@@ -120,7 +117,6 @@ bool find_better_solution(Simulator *sim) {
         //  and solsteps so that we have a proper merger.
         if (!handled_state)
             handled_state = case2_match_complete_state(status);
-
         // If the node isn't poised or a duplicate, then we record it as a new state in the seen list, etc.
         if (!handled_state)
             status->record_new_state();
@@ -145,6 +141,7 @@ bool find_better_solution(Simulator *sim) {
         bool failed_initial_state = false;
         if (!handled_state)
             failed_initial_state = case6_deadend(status);
+
         if (failed_initial_state)
             return false;
     }
@@ -201,7 +198,6 @@ bool find_better_solution(Simulator *sim) {
 // Case 1 //
 // See if this node is poisoned, or should be flagged as such //
 bool case1_poisoned_node(PR2SearchStatus * SS) {
-
     if (!PR2.deadend.poison_search)
         return false;
 
@@ -212,7 +208,6 @@ bool case1_poisoned_node(PR2SearchStatus * SS) {
     // See if we're already poisoned
     if (SS->current_node->poisoned)
         poisoned = true;
-
     // Check if this state is a recognized deadend
     else if (PR2.deadend.states->check_entailed_match(*(SS->current_state)) ||
              is_deadend(*(SS->current_state))) {

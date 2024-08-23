@@ -20,7 +20,6 @@ SolutionStep::SolutionStep(PR2State *s, PSGraph *psg, int d, const PR2OperatorPr
     //  expand.* files.
     if (!is_g)
         succ.resize(PR2.general.nondet_mapping[op.nondet_index].size(), nullptr);
-
     // Inform the PSGraph that we've created another SolutionStep
     containing_graph->add_step(this);
 
@@ -234,6 +233,7 @@ Solution::Solution(Simulator *sim) {
     for (auto goal_tuple : PR2.localize.original_goal)
         (*gs)[goal_tuple.first] = goal_tuple.second;
 
+    //  *(PR2.general.goal_op) is undefined
     SolutionStep * gss = new SolutionStep(gs, network, 0, *(PR2.general.goal_op), -1, true, true, true);
     policy->add_item(gss);
     network->goal = gss;

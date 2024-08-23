@@ -9,6 +9,7 @@
 class TaskProxy;
 class OperatorProxy;
 class OperatorsProxy;
+class GoalsProxy;
 class EffectsProxy;
 class StateInterface;
 
@@ -27,8 +28,7 @@ namespace fsap_penalized_ff_heuristic {
 
 class PR2State;
 class PR2OperatorProxy;
-
-
+class PR2GoalProxy;
 
 class PR2OperatorProxy : public OperatorProxy {
     const AbstractTask *task;
@@ -51,9 +51,12 @@ public:
 
     string get_nondet_name() const
     {
-        // Split the get_name() string and return everything before _DETDUP
         string name = get_name();
-        return name.substr(0, name.find("_DETDUP"));
+        // Split the get_name() string and return everything before _DETDUP_x and after
+        //Only works up to 9 splits. Will have to be rewritten to accomdate more
+        if (name.find("_detdup_") != std::string::npos)
+            name = name.erase(name.find("_detdup_"), name.find("_detdup_") + 1);
+        return name;
     }
     void dump() const {
         cout << "Operator: " << get_name() << endl;
@@ -114,9 +117,9 @@ public:
     PR2OperatorProxy operator[](std::size_t index) const {
         assert(index < size());
         // Call the parent [] method and cast the result to a PR2OperatorProxy
-        // OperatorProxy op = OperatorsProxy::operator[](index);
-        // return static_cast<PR2OperatorProxy &>(op);
-        return PR2OperatorProxy(*_task, index, false);
+        OperatorProxy op = OperatorsProxy::operator[](index);
+        return static_cast<PR2OperatorProxy &>(op);
+        // return PR2OperatorProxy(*_task, index, false);
     }
 
     PR2OperatorProxy operator[](OperatorID id) const {
@@ -124,7 +127,55 @@ public:
     }
 };
 
+class PR2GoalProxy : public PR2OperatorProxy {
+    const AbstractTask *task;
+    int _index = -1;
+    bool _is_an_axiom = false;
+    GoalsProxy goal;
 
+public:
+    int nondet_index;
+    int nondet_outcome;
+
+    // TODO: https://github.com/QuMuLab/rbp/blob/main/src/search/global_operator.cc#L142
+    PR2State *all_fire_context;
+
+    PR2GoalProxy(const AbstractTask &task) 
+        : PR2OperatorProxy(task, -1, false), task(&task), goal(GoalsProxy(task)) {}
+
+    void dump() const {
+        cout << "Operator: " << get_name() << endl;
+        cout << "Nondet index: " << nondet_index << endl;
+        cout << "Nondet outcome: " << nondet_outcome << endl;
+        cout << "Is axiom: " << _is_an_axiom << endl;
+        cout << "Goal Conditions:" << endl;
+        for (auto precond : goal)
+        {
+            cout << "  " << precond.get_variable().get_id() << " = " << precond.get_value() << endl;
+        }
+        cout << "Effects:" << endl;
+        cout << "Goal Achieved";
+    }
+    
+    bool is_possibly_applicable(const PR2State &state) const {
+        // Iterate over the conditions, and look for something that disagrees with the state
+        for (auto pre : goal)
+        {
+            if ((state[pre.get_variable().get_id()] != -1) && 
+                (state[pre.get_variable().get_id()] != pre.get_value()))
+                return false;
+        }
+        return true;
+    }
+    int compute_conflict_var(PR2State &state) const {
+        for (auto pre : goal) {
+            if ((state[pre.get_variable().get_id()] != -1) && 
+                (state[pre.get_variable().get_id()] != pre.get_value()))
+                return pre.get_variable().get_id();
+        }
+        return -1;
+    }
+};
 
 class PR2TaskProxy : public TaskProxy {
 
@@ -140,10 +191,15 @@ class PR2TaskProxy : public TaskProxy {
 
 public:
 
-    PR2TaskProxy(const AbstractTask &task, PR2State init) : TaskProxy(task), task(&task), orig_initial_state(&init) {}
+    explicit PR2TaskProxy(const AbstractTask &task, PR2State init) : TaskProxy(task), task(&task), orig_initial_state(&init) {}
 
     PR2OperatorsProxy get_operators() const {
-        return PR2OperatorsProxy(TaskProxy::get_operators());
+        const OperatorsProxy &ops = TaskProxy::get_operators();
+        return PR2OperatorsProxy(ops);
+    }
+
+    PR2GoalProxy * get_goal_operator() const {
+        return new PR2GoalProxy(*task);
     }
 
     void set_nondet_index_map(vector<int> &nmap) {
