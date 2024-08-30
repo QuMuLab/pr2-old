@@ -11,15 +11,26 @@
 #include "fd_integration/fsap_penalized_ff_heuristic.h"
 #include "fd_integration/pr2_search_algorithm.h"
 
-bool PR2Wrapper::run_pr2(shared_ptr<SearchAlgorithm> engine) {
+bool PR2Wrapper::run_pr2() {
 
     PR2.time.start();
 
     // Create the nondet mapping required
     PR2.generate_nondet_operator_mappings();
 
-    // Cast SearchAlgorithm shared_ptr to PR2Search shared_ptr
-    pr2_engine = dynamic_pointer_cast<pr2_search::PR2Search>(engine);
+    //Manually construct engine
+    plugins::Options opts = plugins::Options();
+    opts.set("cost_type", OperatorCost::NORMAL);
+    //Is bound used at all?
+    opts.set("bound", 999999);
+    opts.set("max_time", PR2.time.limit);
+    opts.set("description", "PR2_Search");
+    opts.set("verbosity", utils::Verbosity::NORMAL);
+    
+    PR2.pr2_engine = make_shared<pr2_search::PR2Search>(opts);
+
+    // // Cast SearchAlgorithm shared_ptr to PR2Search shared_ptr
+    // pr2_engine = dynamic_pointer_cast<pr2_search::PR2Search>(engine);
 
     /**********************************
      * Initialize the data structures *
@@ -28,10 +39,10 @@ bool PR2Wrapper::run_pr2(shared_ptr<SearchAlgorithm> engine) {
 
     PR2.general.goal_op = PR2.proxy->get_goal_operator();
 
-    //Load bearing print statement?!?
-    //Removing this line causes generate_regressable_ops to fail
-    //How?
-    cout << "HERE?" << endl;
+
+    for (auto x : PR2.proxy->get_goals()) {
+        PR2.localize.original_goal.push_back(pair<int, int>(x.get_variable().get_id(), x.get_value()));
+    }
 
     if (PR2.deadend.enabled)
         generate_regressable_ops();
@@ -86,23 +97,6 @@ bool PR2Wrapper::run_pr2(shared_ptr<SearchAlgorithm> engine) {
      ********************************/
 
     cout << "\n\nBeginning search for strong cyclic solution..." << endl;
-
-    cout << "Verify all relevant data sructures" << endl;
-
-    PR2.solution.incumbent->policy->dump();
-    PR2.solution.best->policy->dump();
-    cout << PR2.general.nondet_mapping << endl;
-    for(auto elem: PR2.general.nondet_outcome_mapping)
-        cout << "[" << elem.first << ", " << elem.second << "]" << ", ";
-    cout << endl;
-    for(auto elem: PR2.general.conditional_mask){
-        for (int elem2 : *elem) {
-            cout << "[" << elem2 << "]" << ", ";
-        }
-    }
-    cout << endl;
-
-    cout << "Data structures verified" << endl;
 
     while (find_better_solution(sim)) {
         if (PR2.logging.verbose)

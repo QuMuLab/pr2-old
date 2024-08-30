@@ -188,6 +188,8 @@ void SolutionStep::validate(set< PR2SearchNode * > &matching_nodes) {
 }
 
 void SolutionStep::record_snapshot(ofstream &outfile, string indent) {
+    if (op.get_id() == -1)
+        return;
     outfile << indent << "\"" << step_id << "\": {" << endl;
     if (is_goal)
         outfile << indent << "  \"expected_successor\": false," << endl;
@@ -233,7 +235,6 @@ Solution::Solution(Simulator *sim) {
     for (auto goal_tuple : PR2.localize.original_goal)
         (*gs)[goal_tuple.first] = goal_tuple.second;
 
-    //  *(PR2.general.goal_op) is undefined
     SolutionStep * gss = new SolutionStep(gs, network, 0, *(PR2.general.goal_op), -1, true, true, true);
     policy->add_item(gss);
     network->goal = gss;
