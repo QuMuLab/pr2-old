@@ -101,10 +101,10 @@ public:
     virtual EffectsProxy get_all_effects() const {
         return get_effects();
     }
-    // might be necessary as PR2GoalProxy needs to override
-    virtual ConditionsProxy * get_all_preconditions() {
-        return &get_preconditions();
-    }
+    // // might be necessary as PR2GoalProxy needs to override
+    // virtual ConditionsProxy * get_all_preconditions() {
+    //     return &get_preconditions();
+    // }
 };
 
 class PR2OperatorsProxy : public OperatorsProxy {
@@ -182,10 +182,10 @@ public:
     EffectsProxy get_all_effects() const {
         return EffectsProxy(*task, -1, false);
     }
-    // necessary as PR2GoalProxy needs to override
-    ConditionsProxy * get_all_preconditions() {
-        return &goal;
-    }
+    // // necessary as PR2GoalProxy needs to override
+    // ConditionsProxy * get_all_preconditions() {
+    //     return &goal;
+    // }
 };
 
 class PR2TaskProxy : public TaskProxy {
