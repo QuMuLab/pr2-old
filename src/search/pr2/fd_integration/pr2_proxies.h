@@ -97,11 +97,14 @@ public:
         }
         return -1;
     }
-    // TODO: Remove if unececssary
-    EffectsProxy get_all_effects() const {
-        // cout << "TODO: Implement PR2OperatorProxy::get_all_effects" << endl;
+    // might be necessary as PR2GoalProxy needs to override
+    virtual EffectsProxy get_all_effects() const {
         return get_effects();
     }
+    // // might be necessary as PR2GoalProxy needs to override
+    // virtual ConditionsProxy * get_all_preconditions() {
+    //     return &get_preconditions();
+    // }
 };
 
 class PR2OperatorsProxy : public OperatorsProxy {
@@ -175,6 +178,14 @@ public:
         }
         return -1;
     }
+    // necessary as PR2GoalProxy needs to override
+    EffectsProxy get_all_effects() const {
+        return EffectsProxy(*task, -1, false);
+    }
+    // // necessary as PR2GoalProxy needs to override
+    // ConditionsProxy * get_all_preconditions() {
+    //     return &goal;
+    // }
 };
 
 class PR2TaskProxy : public TaskProxy {

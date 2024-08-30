@@ -41,7 +41,7 @@ int main(int argc, const char **argv) {
         if (!parsed) 
             throw std::invalid_argument( "Parsing Failed" );
 
-        PR2.run_pr2(PR2.pr2_engine);
+        PR2.run_pr2();
 
     } catch (const utils::ExitException &e) {
         /* To ensure that all destructors are called before the program exits,

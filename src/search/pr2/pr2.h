@@ -39,7 +39,7 @@ struct PR2Wrapper {
 
 
     // Main call to the PR2 planner's outer loop
-    bool run_pr2(shared_ptr<SearchAlgorithm> engine);
+    bool run_pr2();
 
     // Used for our simulator
     utils::RandomNumberGenerator rng;
@@ -52,6 +52,7 @@ struct PR2Wrapper {
 
     // The single search algorithm used by PR2
     shared_ptr<pr2_search::PR2Search> pr2_engine;
+    unique_ptr<pr2_search::PR2Search> generate_initial_search_algorithm();
 
     void generate_orig_applicable_ops(const PR2State &curr, vector<OperatorID> &ops);
     void generate_fsap_aware_applicable_ops(const PR2State &curr, vector<OperatorID> &ops);
@@ -316,6 +317,8 @@ struct PR2Wrapper {
      * Used to seed all of the options in the underlying solver *
      ************************************************************/
     bool check_options(const vector<string> &args) {
+
+        
 
         //The first element of args is the path
         for (unsigned int i = 1; i < args.size(); i++) {

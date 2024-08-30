@@ -54,6 +54,7 @@ const State &StateRegistry::get_initial_state() {
         // Avoid garbage values in half-full bins.
         fill_n(buffer.get(), num_bins, 0);
 
+        //I believe this state is broken
         State initial_state = task_proxy.get_initial_state();
         for (size_t i = 0; i < initial_state.size(); ++i) {
             state_packer.set(buffer.get(), i, initial_state[i].get_value());
@@ -62,6 +63,14 @@ const State &StateRegistry::get_initial_state() {
         StateID id = insert_id_or_pop_state();
         cached_initial_state = utils::make_unique_ptr<State>(lookup_state(id));
     }
+    int x = 1 + 1;
+    x = 1 + 1;
+    x = 1 + 1;
+    x = 1 + 1;
+    x = 1 + 1;
+    x = 1 + 1;
+    x = 1 + 1;
+    // I think this return is broken
     return *cached_initial_state;
 }
 
